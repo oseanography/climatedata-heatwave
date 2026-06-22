@@ -45,7 +45,7 @@ LOCATIONS = {
 }
 
 # ── Pick which one to run ─────────────────────────────────────────────────────
-ACTIVE = "cambridge"   # ← change this to "cambridge", "mainz", "madrid", or elsewhere
+ACTIVE = "madrid"   # ← change this to "cambridge", "mainz", "madrid", or elsewhere
 
 LAT      = LOCATIONS[ACTIVE]["lat"]
 LON      = LOCATIONS[ACTIVE]["lon"]
@@ -110,7 +110,7 @@ def fetch_historical(lat, lon, start_date: str, end_date: str) -> pd.DataFrame:
                          "tmax": d["temperature_2m_max"]})
 
 
-def fetch_forecast(lat, lon, forecast_days: int = 16) -> pd.DataFrame:
+def fetch_forecast(lat, lon, forecast_days: int = 16, past_days: int = 7) -> pd.DataFrame:
     """
     Download ECMWF daily maximum temperature forecast from Open-Meteo.
 
@@ -125,6 +125,7 @@ def fetch_forecast(lat, lon, forecast_days: int = 16) -> pd.DataFrame:
         "daily"        : "temperature_2m_max",
         "timezone"     : "Europe/London",
         "forecast_days": forecast_days,
+        "past_days"    : past_days,        # ← add this line
     }
     r = requests.get(url, params=params, timeout=30)
     r.raise_for_status()
@@ -172,6 +173,11 @@ print(f"  Observation rows: {len(curr_obs)}")
 # ── 16-day forecast ───────────────────────────────────────────────────────────
 print("\nDownloading 16-day forecast…")
 curr_fcast = fetch_forecast(LAT, LON, forecast_days=16)
+# Days between ERA5 cutoff and today are analysis data, not genuine forecasts
+# → mark them solid (is_forecast=False) so they plot with full opacity
+today_ts = pd.Timestamp(TODAY)
+curr_fcast["is_forecast"] = curr_fcast["date"] >= today_ts
+
 # Keep only future dates (no overlap with observations)
 curr_fcast = curr_fcast[curr_fcast["date"] > pd.to_datetime(obs_end)]
 print(f"  Forecast rows: {len(curr_fcast)}")
@@ -262,7 +268,7 @@ curr = curr_all.merge(
 curr["anomaly"]      = curr["tmax"] - curr["clim_mean"]
 curr["is_forecast"]  = curr["is_forecast"].fillna(False)
 
-print(curr[["date", "tmax", "clim_mean", "anomaly", "is_forecast"]].tail(10))
+print(curr[["date", "tmax", "clim_mean", "anomaly", "is_forecast"]].tail(20))
 
 
 # %% [markdown]
@@ -331,6 +337,10 @@ def plot_temperature_climatology(
     # ─────────────────────────────────────────────────────────────────────────
     observed = df[~df["is_forecast"]]
     forecast = df[df["is_forecast"]]
+
+    # Bridge the gap: extend forecast fill back to the last observed point
+    if not observed.empty and not forecast.empty:
+        forecast = pd.concat([observed.iloc[[-1]], forecast]).reset_index(drop=True)
 
     for subset, alpha_val in [(observed, 0.85), (forecast, 0.45)]:
         if subset.empty:
@@ -443,9 +453,9 @@ fig_full, ax_full = plot_temperature_climatology(
     date_range=None,
     figsize=(15, 6),
 )
-plt.savefig("cambridge_temp_full_year.png", dpi=150, bbox_inches="tight")
+plt.savefig(f"{ACTIVE}_temp_full_year.png", dpi=150, bbox_inches="tight")
 plt.show()
-print("Saved: cambridge_temp_full_year.png")
+print(f"Saved: {ACTIVE}_temp_full_year.png")
 
 
 # %% [markdown]
@@ -461,9 +471,9 @@ fig_spring, ax_spring = plot_temperature_climatology(
     date_range=(f"{CURRENT_YEAR}-03-01", f"{CURRENT_YEAR}-07-15"),
     figsize=(13, 6),
 )
-plt.savefig("cambridge_temp_spring.png", dpi=150, bbox_inches="tight")
+plt.savefig(f"{ACTIVE}_temp_spring.png", dpi=150, bbox_inches="tight")
 plt.show()
-print("Saved: cambridge_temp_spring.png")
+print(f"Saved: {ACTIVE}_temp_spring.png")
 
 
 # %% [markdown]
