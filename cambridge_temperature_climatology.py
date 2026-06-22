@@ -420,7 +420,7 @@ def plot_temperature_climatology(
         fontsize=13, fontweight="bold", pad=12, loc="left"
     )
     ax.text(0.0, 1.01,
-            f"Model: ERA5  |  Climatology: {clim_start}–{clim_end}  |  Source: Open-Meteo",
+            f"Obs: ERA5, Forecast: ECMWF |  Climatology: {clim_start}–{clim_end}  |  Source: Open-Meteo",
             transform=ax.transAxes, fontsize=7.5, va="bottom", color="#666666")
 
     plt.tight_layout()
