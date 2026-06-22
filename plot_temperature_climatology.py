@@ -50,7 +50,7 @@ LOCATIONS = {
 }
 
 # ── Pick which one to run ─────────────────────────────────────────────────────
-ACTIVE = "madrid"   # ← change this to "cambridge", "mainz", "madrid", or elsewhere
+ACTIVE = "london"   # ← change this to "cambridge", "mainz", "madrid", or elsewhere
 
 LAT      = LOCATIONS[ACTIVE]["lat"]
 LON      = LOCATIONS[ACTIVE]["lon"]
