@@ -1,5 +1,5 @@
 # %% [markdown]
-# # Cambridge, UK – Daily Temperature vs Climatology
+# # Cambridge, UK (or somewhere else) – Daily Temperature vs Climatology
 #
 # This script reproduces the style of ERA5 temperature charts showing:
 # - Grey shading: 5th–95th percentile range across a 30-year climatology
@@ -37,10 +37,19 @@ import os
 
 warnings.filterwarnings("ignore")
 
-# ── Location ──────────────────────────────────────────────────────────────────
-LAT          = 52.2053   # Cambridge, UK
-LON          = 0.1218
-LOCATION     = "Cambridge, UK"
+# ── All available locations ───────────────────────────────────────────────────
+LOCATIONS = {
+    "cambridge" : {"name": "Cambridge, UK",    "lat": 52.2053, "lon":  0.1218},
+    "mainz"     : {"name": "Mainz, Germany",   "lat": 49.9929, "lon":  8.2473},
+    "madrid"    : {"name": "Madrid, Spain",    "lat": 40.4168, "lon": -3.7038},
+}
+
+# ── Pick which one to run ─────────────────────────────────────────────────────
+ACTIVE = "cambridge"   # ← change this to "cambridge", "mainz", "madrid", or elsewhere
+
+LAT      = LOCATIONS[ACTIVE]["lat"]
+LON      = LOCATIONS[ACTIVE]["lon"]
+LOCATION = LOCATIONS[ACTIVE]["name"]
 
 # ── Climatology period ────────────────────────────────────────────────────────
 CLIM_START   = 1991      # WMO standard 1991–2020 period
@@ -134,7 +143,8 @@ def fetch_forecast(lat, lon, forecast_days: int = 16) -> pd.DataFrame:
 
 # %%
 # ── Climatology period ────────────────────────────────────────────────────────
-clim_cache = os.path.join(CACHE_DIR, f"clim_{CLIM_START}_{CLIM_END}.csv")
+loc_slug = LOCATION.replace(", ", "_").replace(" ", "_")
+clim_cache = os.path.join(CACHE_DIR, f"clim_{loc_slug}_{CLIM_START}_{CLIM_END}.csv")
 
 if os.path.exists(clim_cache):
     print(f"Loading climatology from cache: {clim_cache}")
