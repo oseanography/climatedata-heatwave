@@ -213,9 +213,10 @@ def compute_climatology(df: pd.DataFrame, smooth_window: int = 21) -> pd.DataFra
     ).reset_index()
 
     # Sort rows by calendar date using a fixed non-leap reference year
-    ref = pd.date_range("2001-01-01", "2001-12-31", freq="D")
-    ref = ref[ref.strftime("%m-%d") != "02-29"]
-    stats = stats.set_index("mmdd").reindex(ref.strftime("%m-%d")).reset_index()
+    # ref = pd.date_range("2001-01-01", "2001-12-31", freq="D")
+    # ref = ref[ref.strftime("%m-%d") != "02-29"]
+    # stats = stats.set_index("mmdd").reindex(ref.strftime("%m-%d")).reset_index()
+    stats = stats.sort_values("mmdd").reset_index(drop=True) # replace with this
 
     # ── Circular smoothing ────────────────────────────────────────────────────
     # Pad the array with values from the other end to avoid Jan/Dec edge artefacts
@@ -231,6 +232,7 @@ def compute_climatology(df: pd.DataFrame, smooth_window: int = 21) -> pd.DataFra
 clim_stats = compute_climatology(clim_raw, smooth_window=SMOOTH_WIN)
 print(f"Climatology computed: {len(clim_stats)} calendar days")
 print(clim_stats.head())
+print(clim_stats.tail())
 
 
 # %% [markdown]
