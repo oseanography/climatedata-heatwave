@@ -44,13 +44,16 @@ LOCATIONS = {
     "madrid"    : {"name": "Madrid, Spain",  "lat": 40.4168, "lon": -3.7038},
     "hong_kong" : {"name": "Hong Kong",      "lat": 22.3193, "lon": 114.1694},
     "xiamen"    : {"name": "Xiamen, China",  "lat": 24.4798, "lon": 118.0894},
+    "qingdao"   : {"name": "Qingdao, China", "lat": 36.0669, "lon": 120.3827},
     "tokyo"     : {"name": "Tokyo, Japan",   "lat": 35.6762, "lon": 139.6503},
     "boston"    : {"name": "Boston, USA",    "lat": 42.3601, "lon": -71.0589},
     "london"    : {"name": "London, UK",     "lat": 51.5074, "lon": -0.1278},
+    "paris"     : {"name": "Paris, France",  "lat": 48.8566, "lon":  2.3522},
+    "split"     : {"name": "Split, Croatia", "lat": 43.5081, "lon":  16.4402},
 }
 
 # ── Pick which one to run ─────────────────────────────────────────────────────
-ACTIVE = "mainz"   # ← change this to "cambridge", "mainz", "madrid", or elsewhere
+ACTIVE = "cambridge"   # ← change this to "cambridge", "mainz", "madrid", or elsewhere
 
 LAT      = LOCATIONS[ACTIVE]["lat"]
 LON      = LOCATIONS[ACTIVE]["lon"]
